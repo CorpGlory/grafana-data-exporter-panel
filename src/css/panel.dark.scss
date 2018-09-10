@@ -1,0 +1,10 @@
+$grafana-background-color: #212124;
+$datepicker-background-color: #212327;
+
+#export-modal {
+  .gf-timepicker-component {
+    .btn.btn-default {
+      background-color: $datepicker-background-color;
+    }
+  }
+}

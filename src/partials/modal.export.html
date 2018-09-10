@@ -1,0 +1,65 @@
+
+<div id="export-modal" class="modal-body">
+  <div class="modal-header">
+    <h2 class="modal-header-title">
+      <i class="fa fa-save"></i>
+      <span class="p-l-1">Export</span>
+    </h2>
+
+    <a class="modal-header-close" ng-click="ctrl.clearRange()">
+      <i class="fa fa-remove"></i>
+    </a>
+  </div>
+  <div class="modal-content">
+    <div class="editor-row">
+      <div class="section gf-form-group">
+        <div class="gf-form inline">
+          <label class="gf-form-label width-4">From</label>
+          <input type="text" class="gf-form-input input-large width-15" ng-model="ctrl.rangeOverride.from" input-datetime>
+          <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.datePickerShow.from = !ctrl.datePickerShow.from">
+            <i class="fa fa-calendar"></i>
+          </button>
+        </div>
+
+        <datepicker
+          ng-if="ctrl.datePickerShow.from"
+          ng-model="ctrl.rangeOverrideRaw.from"
+          class="gf-timepicker-component"
+          show-weeks="false"
+          starting-day="1"
+          ng-change="ctrl.onRangeFromChange()"
+        >
+        </datepicker>
+      </div>
+
+      <div class="section gf-form-group">
+        <div class="gf-form inline">
+          <label class="gf-form-label width-4">To</label>
+          <input type="text" class="gf-form-input input-large width-15" ng-model="ctrl.rangeOverride.to" input-datetime>
+          <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.datePickerShow.to = !ctrl.datePickerShow.to">
+            <i class="fa fa-calendar"></i>
+          </button>
+        </div>
+
+        <datepicker
+          ng-if="ctrl.datePickerShow.to"
+          ng-model="ctrl.rangeOverrideRaw.to"
+          class="gf-timepicker-component"
+          show-weeks="false"
+          starting-day="1"
+          ng-change="ctrl.onRangeToChange()"
+        >
+        </datepicker>
+      </div>
+    </div>
+
+    <div class="gf-form-button-row text-center">
+      <button class="btn gf-form-btn btn-success" type="button" ng-click="ctrl.export(panelId, target)">
+        Add task
+      </button>
+      <button class="btn gf-form-btn btn-inverse" type="button" ng-click="ctrl.clearRange()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

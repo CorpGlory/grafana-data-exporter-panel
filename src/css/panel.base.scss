@@ -1,0 +1,16 @@
+$grafana-background-color: #212124;
+
+panel-plugin-export-manager-panel {
+  table#queries {
+    table-layout: fixed;
+
+    thead {
+      th:last-of-type {
+        width: 10%;
+      }
+      th:not(:last-of-type) {
+        width: calc(90%/4);
+      }
+    }
+  }
+}

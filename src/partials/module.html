@@ -1,0 +1,81 @@
+<div id="export-manager-panel" class="table-panel-container">
+  <div class="table-panel-header-bg"></div>
+  <div class="table-panel-scroll">
+    <table class="table-panel-table" id="queries">
+      <thead>
+        <tr>
+          <th>
+            <div class="table-panel-table-header-inner">
+              Panel
+            </div>
+          </th>
+          <th>
+            <div class="table-panel-table-header-inner">
+              Datasource
+            </div>
+          </th>
+          <th>
+            <div class="table-panel-table-header-inner">
+              Measurement
+            </div>
+          </th>
+          <th>
+            <div class="table-panel-table-header-inner">
+              Query
+            </div>
+          </th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr 
+          class="panel" 
+          ng-repeat-start="panel in ctrl.panels" 
+          ng-if="panel.targets.length > 0"
+        >
+          <td>
+            {{ panel.title }}
+          </td>
+          <td>
+            {{ panel.datasource }}
+          </td>
+          <td>-</td>
+          <td>-</td>
+          <td>
+            <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.toggleTargetRows(panel.id)">
+              <i class="fa fa-chevron-down" ng-if="!ctrl.showRows[panel.id]"></i>
+              <i class="fa fa-chevron-up" ng-if="ctrl.showRows[panel.id]"></i>
+            </button>
+          </td>
+        </tr>
+
+        <tr
+          class="target"
+          ng-repeat-end
+          ng-repeat="target in panel.targets"
+          ng-if="ctrl.showRows[panel.id]"
+        >
+          <td></td>
+          <td></td>
+          <td>
+            <span class="template-variable">
+              {{ target.refId }}
+            </span>
+            : {{ target.measurement }}
+          </td>
+          <td ng-if="target.query !== undefined">
+            {{ target.query }}
+          </td>
+          <td ng-if="target.query === undefined">
+            -
+          </td>
+          <td>
+            <button class="btn gf-form-btn btn-primary" data-ng-disabled="target.query === undefined" type="button" ng-click="ctrl.showExportModal(panel.id, target)">
+              Export
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

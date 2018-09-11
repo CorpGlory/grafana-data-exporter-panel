@@ -14,7 +14,7 @@ function resolve(dir) {
 module.exports = {
   target: 'node',
   context: resolve('src'),
-  entry: './module.js',
+  entry: './module.ts',
   output: {
     filename: "module.js",
     path: resolve('dist'),
@@ -49,15 +49,10 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /(external)/,
+        test: /\.ts$/,
+        exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-          query: {
-            presets: [
-              require.resolve('babel-preset-env')
-            ]
-          }
+          loader: 'ts-loader'
         }
       },
       {

@@ -1,7 +1,3 @@
-import _ from 'lodash';
-import $ from 'jquery';
-import moment from 'moment';
-
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import { appEvents } from 'grafana/app/core/core';
 
@@ -9,12 +5,38 @@ import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
 
+import _ from 'lodash';
+import $ from 'jquery';
+import moment from 'moment';
+
+
+// TODO: add to types-grafana
+declare var grafanaBootData: any;
 
 const PANEL_DEFAULTS = {
   backendUrl: ''
 }
 
 class Ctrl extends MetricsPanelCtrl {
+  private _backendSrv;
+  private _panelPath: string;
+  private _partialsPath: string;
+  public showRows: Object;
+  private _element;
+  private rangeOverride: {
+    from: string,
+    to: string
+  };
+  private rangeOverrideRaw: {
+    from: string,
+    to: string
+  };
+  private datePickerShow: {
+    from: Boolean,
+    to: Boolean
+  };
+
+  static templateUrl = 'partials/module.html';
 
   constructor($scope, $injector, backendSrv) {
     super($scope, $injector);
@@ -51,11 +73,11 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
   _initStyles() {
-    window.System.import(`${this._panelPath}/css/panel.base.css!`);
+    (<any>window).System.import(`${this._panelPath}/css/panel.base.css!`);
     if(grafanaBootData.user.lightTheme) {
-      window.System.import(`${this._panelPath}/css/panel.light.css!`);
+      (<any>window).System.import(`${this._panelPath}/css/panel.light.css!`);
     } else {
-      window.System.import(`${this._panelPath}/css/panel.dark.css!`);
+      (<any>window).System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
 
@@ -161,7 +183,5 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
 }
-
-Ctrl.templateUrl = 'partials/module.html';
 
 export { Ctrl as PanelCtrl }

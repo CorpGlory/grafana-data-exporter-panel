@@ -1,9 +1,11 @@
-import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
-import { appEvents } from 'grafana/app/core/core';
+import { DatasourceRequest } from './models/datasource';
 
 import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
+
+import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
+import { appEvents } from 'grafana/app/core/core';
 
 import _ from 'lodash';
 import $ from 'jquery';
@@ -23,18 +25,19 @@ class Ctrl extends MetricsPanelCtrl {
   private _partialsPath: string;
   public showRows: Object;
   private _element;
-  private rangeOverride: {
+  public rangeOverride: {
     from: string,
     to: string
   };
-  private rangeOverrideRaw: {
+  public rangeOverrideRaw: {
     from: string,
     to: string
   };
-  private datePickerShow: {
+  public datePickerShow: {
     from: Boolean,
     to: Boolean
   };
+  private _datasourceRequest: DatasourceRequest;
 
   static templateUrl = 'partials/module.html';
 
@@ -48,6 +51,17 @@ class Ctrl extends MetricsPanelCtrl {
 
     this.events.on('render', this._onRender.bind(this));
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
+
+    appEvents.on('ds-request-response', data => {
+      let requestConfig = data.config;
+      this._datasourceRequest = {
+        url: requestConfig.url,
+        type: requestConfig.inspect.type,
+        method: requestConfig.method,
+        data: requestConfig.data,
+        params: requestConfig.params
+      };
+    });
 
     this.clearRange();
     this.showRows = {};
@@ -134,18 +148,16 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
   async export(panelId, target) {
-    let panel = this.panels.find(el => el.id === panelId);
-    let datasource = panel.datasource;
-    let query = target.query;
-    let measurement = target.measurement;
+    let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
+
     let user = await this._getCurrentUser();
 
     this._backendSrv.post(`${this.panel.backendUrl}/tasks`, {
-      from: moment(this.rangeOverride.from).valueOf() + 'ms',
-      to: moment(this.rangeOverride.to).valueOf() + 'ms',
-      datasource,
-      query,
-      measurement,
+      from: moment(this.rangeOverride.from).valueOf(),
+      to: moment(this.rangeOverride.to).valueOf(),
+      panelUrl,
+      target,
+      datasourceRequest: this._datasourceRequest,
       user
     })
       .then(data => {

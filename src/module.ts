@@ -38,6 +38,7 @@ class Ctrl extends MetricsPanelCtrl {
 
   static templateUrl = 'partials/module.html';
 
+  /** @ngInject */
   constructor($scope, $injector, backendSrv) {
     super($scope, $injector);
     _.defaults(this.panel, PANEL_DEFAULTS);

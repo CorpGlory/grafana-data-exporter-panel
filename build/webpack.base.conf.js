@@ -7,6 +7,8 @@ const ExtractTextPluginBase = new ExtractTextPlugin('./css/panel.base.css');
 const ExtractTextPluginLight = new ExtractTextPlugin('./css/panel.light.css');
 const ExtractTextPluginDark = new ExtractTextPlugin('./css/panel.dark.css');
 
+const ngAnnotatePlugin = require('ng-annotate-webpack-plugin');
+
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -40,6 +42,7 @@ module.exports = {
     ExtractTextPluginBase,
     ExtractTextPluginLight,
     ExtractTextPluginDark,
+    new ngAnnotatePlugin()
   ],
   resolve: {
     alias: {

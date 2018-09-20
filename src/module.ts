@@ -185,8 +185,8 @@ class Ctrl extends MetricsPanelCtrl {
       to: ''
     };
     this.datePickerShow = {
-      from: false,
-      to: false
+      from: true,
+      to: true
     };
     appEvents.emit('hide-modal');
   }

@@ -54,9 +54,15 @@ class Ctrl extends MetricsPanelCtrl {
 
     appEvents.on('ds-request-response', data => {
       let requestConfig = data.config;
+      let type;
+      if(requestConfig.inspect !== undefined) {
+        type = requestConfig.inspect.type;
+      } else {
+        type = '';
+      }
       this._datasourceRequest = {
         url: requestConfig.url,
-        type: requestConfig.inspect.type,
+        type,
         method: requestConfig.method,
         data: requestConfig.data,
         params: requestConfig.params

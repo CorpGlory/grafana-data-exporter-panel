@@ -160,7 +160,15 @@ class Ctrl extends MetricsPanelCtrl {
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
 
-    this._backendSrv.post(`${this.panel.backendUrl}/tasks`, {
+    let formattedUrl = this.panel.backendUrl;
+    if(!this.panel.backendUrl.includes('http://')) {
+      formattedUrl = `http://${this.panel.backendUrl}`;
+    }
+    if(this.panel.backendUrl.slice(-1) === '/') {
+      formattedUrl = formattedUrl.slice(0, -1);
+    }
+
+    this._backendSrv.post(`${formattedUrl}/tasks`, {
       from: moment(this.rangeOverride.from).valueOf(),
       to: moment(this.rangeOverride.to).valueOf(),
       panelUrl,

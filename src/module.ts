@@ -90,29 +90,29 @@ class Ctrl extends MetricsPanelCtrl {
 
   async _getCurrentUser() {
     return this._backendSrv.get('/api/user')
-      .then(data => data.login)
+      .then(data => data.login);
   }
 
-  _initStyles() {
-    (<any>window).System.import(`${this._panelPath}/css/panel.base.css!`);
+  private _initStyles() {
+    (window as any).System.import(`${this._panelPath}/css/panel.base.css!`);
     if(grafanaBootData.user.lightTheme) {
-      (<any>window).System.import(`${this._panelPath}/css/panel.light.css!`);
+      (window as any).System.import(`${this._panelPath}/css/panel.light.css!`);
     } else {
-      (<any>window).System.import(`${this._panelPath}/css/panel.dark.css!`);
+      (window as any).System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
 
-  _onRender() {
+  private _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
   }
 
-  _onInitEditMode() {
+  private _onInitEditMode() {
     this.addEditorTab(
       'Options', `${this._partialsPath}/editor.options.html`, 2
     );
   }
 
-  _getTableHeight() {
+  private _getTableHeight() {
     return this.height - 31 + 'px';
   }
 
@@ -128,7 +128,7 @@ class Ctrl extends MetricsPanelCtrl {
     });
   }
 
-  _showConfirmationModal(url) {
+  private _showConfirmationModal(url) {
     let modalScope = this.$scope.$new(true);
     modalScope.ctrl = this;
     modalScope.url = url;

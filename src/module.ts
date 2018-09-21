@@ -1,5 +1,3 @@
-import { DatasourceRequest } from './models/datasource';
-
 import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
@@ -37,7 +35,7 @@ class Ctrl extends MetricsPanelCtrl {
     from: Boolean,
     to: Boolean
   };
-  private _datasourceRequest: DatasourceRequest;
+  private _datasourceRequest: any;
 
   static templateUrl = 'partials/module.html';
 
@@ -48,19 +46,26 @@ class Ctrl extends MetricsPanelCtrl {
     this._backendSrv = backendSrv;
     this._panelPath = `/public/plugins/${this.pluginId}`;
     this._partialsPath = `${this._panelPath}/partials`;
+    this._datasourceRequest = {};
 
     this.events.on('render', this._onRender.bind(this));
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
 
     appEvents.on('ds-request-response', data => {
       let requestConfig = data.config;
+      let datasourceIdRegExp = requestConfig.url.match(/proxy\/(\d+)/);
+      if(datasourceIdRegExp === null) {
+        throw new Error(`Cannot find datasource id in url ${requestConfig.url}`);
+      }
+
+      let datasourceId = datasourceIdRegExp[1];
       let type;
       if(requestConfig.inspect !== undefined) {
         type = requestConfig.inspect.type;
       } else {
         type = '';
       }
-      this._datasourceRequest = {
+      this._datasourceRequest[datasourceId] = {
         url: requestConfig.url,
         type,
         method: requestConfig.method,
@@ -87,31 +92,36 @@ class Ctrl extends MetricsPanelCtrl {
     }
   }
 
-  async _getCurrentUser() {
+  private async _getCurrentUser() {
     return this._backendSrv.get('/api/user')
-      .then(data => data.login)
+      .then(data => data.login);
   }
 
-  _initStyles() {
-    (<any>window).System.import(`${this._panelPath}/css/panel.base.css!`);
+  private async _getDatasourceIdByName(name: string) {
+    return this._backendSrv.get(`/api/datasources/id/${name}`)
+      .then(data => data.id);
+  }
+
+  private _initStyles() {
+    (window as any).System.import(`${this._panelPath}/css/panel.base.css!`);
     if(grafanaBootData.user.lightTheme) {
-      (<any>window).System.import(`${this._panelPath}/css/panel.light.css!`);
+      (window as any).System.import(`${this._panelPath}/css/panel.light.css!`);
     } else {
-      (<any>window).System.import(`${this._panelPath}/css/panel.dark.css!`);
+      (window as any).System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
 
-  _onRender() {
+  private _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
   }
 
-  _onInitEditMode() {
+  private _onInitEditMode() {
     this.addEditorTab(
       'Options', `${this._partialsPath}/editor.options.html`, 2
     );
   }
 
-  _getTableHeight() {
+  private _getTableHeight() {
     return this.height - 31 + 'px';
   }
 
@@ -128,7 +138,7 @@ class Ctrl extends MetricsPanelCtrl {
     });
   }
 
-  _showConfirmationModal(url) {
+  private _showConfirmationModal(url) {
     let modalScope = this.$scope.$new(true);
     modalScope.ctrl = this;
     modalScope.url = url;
@@ -159,6 +169,7 @@ class Ctrl extends MetricsPanelCtrl {
     let user = await this._getCurrentUser();
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
+    let datasourceId = await this._getDatasourceIdByName(datasourceName);
 
     let formattedUrl = this.panel.backendUrl;
     if(!this.panel.backendUrl.includes('http://')) {
@@ -173,7 +184,7 @@ class Ctrl extends MetricsPanelCtrl {
       to: moment(this.rangeOverride.to).valueOf(),
       panelUrl,
       target,
-      datasourceRequest: this._datasourceRequest,
+      datasourceRequest: this._datasourceRequest[datasourceId],
       datasourceName,
       user
     })

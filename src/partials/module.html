@@ -49,18 +49,14 @@
           ng-repeat="target in panel.targets"
           ng-if="ctrl.showRows[panel.id]"
         >
-          <td>{{ panel.title }}</td>
+          <td></td>
           <td>
             <span class="template-variable">
               {{ target.refId }}
             </span>
             : {{ target.measurement }}
           </td>
-          <td ng-if="target.query !== undefined">
-            {{ target.query }}
-          </td>
-          <td ng-if="target.query === undefined">
-          </td>
+          <td></td>
           <td>
             <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.showExportModal(panel.id, target)">
               Export

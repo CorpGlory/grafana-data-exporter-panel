@@ -157,6 +157,8 @@ class Ctrl extends MetricsPanelCtrl {
     let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
 
     let user = await this._getCurrentUser();
+    let panel = this.panels.find(el => el.id === panelId);
+    let datasourceName = panel.datasource;
 
     this._backendSrv.post(`${this.panel.backendUrl}/tasks`, {
       from: moment(this.rangeOverride.from).valueOf(),
@@ -164,6 +166,7 @@ class Ctrl extends MetricsPanelCtrl {
       panelUrl,
       target,
       datasourceRequest: this._datasourceRequest,
+      datasourceName,
       user
     })
       .then(data => {

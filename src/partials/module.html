@@ -11,17 +11,12 @@
           </th>
           <th>
             <div class="table-panel-table-header-inner">
+              RefId
+            </div>
+          </th>
+          <th>
+            <div class="table-panel-table-header-inner">
               Datasource
-            </div>
-          </th>
-          <th>
-            <div class="table-panel-table-header-inner">
-              Measurement
-            </div>
-          </th>
-          <th>
-            <div class="table-panel-table-header-inner">
-              Query
             </div>
           </th>
           <th></th>
@@ -36,11 +31,10 @@
           <td>
             {{ panel.title }}
           </td>
+          <td>-</td>
           <td>
             {{ panel.datasource }}
           </td>
-          <td>-</td>
-          <td>-</td>
           <td>
             <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.toggleTargetRows(panel.id)">
               <i class="fa fa-chevron-down" ng-if="!ctrl.showRows[panel.id]"></i>
@@ -56,19 +50,13 @@
           ng-if="ctrl.showRows[panel.id]"
         >
           <td></td>
-          <td></td>
           <td>
             <span class="template-variable">
               {{ target.refId }}
             </span>
             : {{ target.measurement }}
           </td>
-          <td ng-if="target.query !== undefined">
-            {{ target.query }}
-          </td>
-          <td ng-if="target.query === undefined">
-            -
-          </td>
+          <td></td>
           <td>
             <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.showExportModal(panel.id, target)">
               Export

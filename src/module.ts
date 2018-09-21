@@ -100,7 +100,7 @@ class Ctrl extends MetricsPanelCtrl {
       (<any>window).System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
-  
+
   _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
   }

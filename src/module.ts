@@ -69,7 +69,6 @@ class Ctrl extends MetricsPanelCtrl {
       };
     });
 
-    this.clearRange();
     this.showRows = {};
 
     $(document.body).on('click', '.delete-task', e => {
@@ -101,7 +100,7 @@ class Ctrl extends MetricsPanelCtrl {
       (<any>window).System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
-
+  
   _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
   }
@@ -117,6 +116,7 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
   showExportModal(panelId, target) {
+    this.clearRange();
     let modalScope = this.$scope.$new(true);
     modalScope.ctrl = this;
     modalScope.panelId = panelId;
@@ -188,12 +188,12 @@ class Ctrl extends MetricsPanelCtrl {
 
   clearRange() {
     this.rangeOverride = {
-      from: '',
-      to: ''
+      from: this.range.from.toISOString(),
+      to: this.range.to.toISOString()
     };
     this.rangeOverrideRaw = {
-      from: '',
-      to: ''
+      from: this.range.from.toISOString(),
+      to: this.range.to.toISOString()
     };
     this.datePickerShow = {
       from: true,

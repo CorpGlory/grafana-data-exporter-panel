@@ -159,10 +159,10 @@ class Ctrl extends MetricsPanelCtrl {
     let user = await this._getCurrentUser();
 
     let formattedUrl = this.panel.backendUrl;
-    if (!this.panel.backendUrl.includes('http://')) {
+    if(!this.panel.backendUrl.includes('http://')) {
       formattedUrl = `http://${this.panel.backendUrl}`;
     }
-    if (this.panel.backendUrl.slice(-1) === '/') {
+    if(this.panel.backendUrl.slice(-1) === '/') {
       formattedUrl = formattedUrl.slice(0, -1);
     }
 

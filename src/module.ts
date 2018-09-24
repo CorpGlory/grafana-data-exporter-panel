@@ -170,7 +170,7 @@ class Ctrl extends MetricsPanelCtrl {
     let datasourceId = datasource.id;
     this._datasourceRequest[datasourceId].type = datasource.type;
 
-    let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
+    let formattedUrl = this.panel.backendUrl;
     if(!this.panel.backendUrl.includes('http://')) {
       formattedUrl = `http://${this.panel.backendUrl}`;
     }
@@ -178,7 +178,7 @@ class Ctrl extends MetricsPanelCtrl {
       formattedUrl = formattedUrl.slice(0, -1);
     }
 
-    this.backendSrv.post(`${formattedUrl}/tasks`, {
+    this.backendSrv.post(`${this.templateSrv.replace(formattedUrl)}/tasks`, {
       from: moment(this.rangeOverride.from).valueOf(),
       to: moment(this.rangeOverride.to).valueOf(),
       panelUrl,

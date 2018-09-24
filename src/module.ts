@@ -59,15 +59,9 @@ class Ctrl extends MetricsPanelCtrl {
       }
 
       let datasourceId = datasourceIdRegExp[1];
-      let type;
-      if(requestConfig.inspect !== undefined) {
-        type = requestConfig.inspect.type;
-      } else {
-        type = '';
-      }
+
       this._datasourceRequest[datasourceId] = {
         url: requestConfig.url,
-        type,
         method: requestConfig.method,
         data: requestConfig.data,
         params: requestConfig.params
@@ -100,6 +94,10 @@ class Ctrl extends MetricsPanelCtrl {
   private async _getDatasourceIdByName(name: string) {
     return this._backendSrv.get(`/api/datasources/id/${name}`)
       .then(data => data.id);
+  }
+
+  private _getDatasourceByName(name: string) {
+    return this._backendSrv.get(`/api/datasources/name/${name}`);
   }
 
   private _initStyles() {
@@ -167,9 +165,12 @@ class Ctrl extends MetricsPanelCtrl {
     let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
 
     let user = await this._getCurrentUser();
+
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
-    let datasourceId = await this._getDatasourceIdByName(datasourceName);
+    let datasource = await this._getDatasourceByName(datasourceName);
+    let datasourceId = datasource.id;
+    this._datasourceRequest[datasourceId].type = datasource.type;
 
     let formattedUrl = this.panel.backendUrl;
     if(!this.panel.backendUrl.includes('http://')) {

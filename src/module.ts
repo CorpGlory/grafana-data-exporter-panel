@@ -18,7 +18,6 @@ const PANEL_DEFAULTS = {
 }
 
 class Ctrl extends MetricsPanelCtrl {
-  private _backendSrv;
   private _panelPath: string;
   private _partialsPath: string;
   public showRows: Object;
@@ -40,10 +39,9 @@ class Ctrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
 
   /** @ngInject */
-  constructor($scope, $injector, backendSrv) {
+  constructor($scope, $injector, private backendSrv) {
     super($scope, $injector);
     _.defaults(this.panel, PANEL_DEFAULTS);
-    this._backendSrv = backendSrv;
     this._panelPath = `/public/plugins/${this.pluginId}`;
     this._partialsPath = `${this._panelPath}/partials`;
     this._datasourceRequest = {};
@@ -87,17 +85,17 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
   private async _getCurrentUser() {
-    return this._backendSrv.get('/api/user')
+    return this.backendSrv.get('/api/user')
       .then(data => data.login);
   }
 
   private async _getDatasourceIdByName(name: string) {
-    return this._backendSrv.get(`/api/datasources/id/${name}`)
+    return this.backendSrv.get(`/api/datasources/id/${name}`)
       .then(data => data.id);
   }
 
   private _getDatasourceByName(name: string) {
-    return this._backendSrv.get(`/api/datasources/name/${name}`);
+    return this.backendSrv.get(`/api/datasources/name/${name}`);
   }
 
   private _initStyles() {
@@ -180,7 +178,7 @@ class Ctrl extends MetricsPanelCtrl {
       formattedUrl = formattedUrl.slice(0, -1);
     }
 
-    this._backendSrv.post(`${formattedUrl}/tasks`, {
+    this.backendSrv.post(`${formattedUrl}/tasks`, {
       from: moment(this.rangeOverride.from).valueOf(),
       to: moment(this.rangeOverride.to).valueOf(),
       panelUrl,
@@ -215,7 +213,7 @@ class Ctrl extends MetricsPanelCtrl {
   }
 
   onDelete(url) {
-    this._backendSrv.get(url)
+    this.backendSrv.get(url)
       .then(() => this.timeSrv.refreshDashboard());
     appEvents.emit('hide-modal');
   }

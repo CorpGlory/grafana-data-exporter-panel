@@ -39,7 +39,7 @@ class Ctrl extends MetricsPanelCtrl {
   static templateUrl = 'partials/module.html';
 
   /** @ngInject */
-  constructor($scope, $injector, private backendSrv, private templateSrv) {
+  constructor($scope, $injector, private backendSrv, public templateSrv) {
     super($scope, $injector);
     _.defaults(this.panel, PANEL_DEFAULTS);
     this._panelPath = `/public/plugins/${this.pluginId}`;
@@ -170,7 +170,7 @@ class Ctrl extends MetricsPanelCtrl {
     let datasourceId = datasource.id;
     this._datasourceRequest[datasourceId].type = datasource.type;
 
-    let formattedUrl = this.panel.backendUrl;
+    let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!this.panel.backendUrl.includes('http://')) {
       formattedUrl = `http://${this.panel.backendUrl}`;
     }

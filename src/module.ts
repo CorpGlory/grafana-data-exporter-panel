@@ -188,7 +188,7 @@ class Ctrl extends MetricsPanelCtrl {
       user
     })
       .then(data => {
-        appEvents.emit('alert-success', ['Success', data]);
+        appEvents.emit('alert-success', ['Task added', data]);
         appEvents.emit('hide-modal');
         this.clearRange();
         this.timeSrv.refreshDashboard();

@@ -168,6 +168,10 @@ class Ctrl extends MetricsPanelCtrl {
     let datasourceName = panel.datasource;
     let datasource = await this._getDatasourceByName(datasourceName);
     let datasourceId = datasource.id;
+    if(this._datasourceRequest[datasourceId] === undefined) {
+      appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
+      throw new Error(`_datasourceRequest[${datasourceId}] is undefined`);
+    }
     this._datasourceRequest[datasourceId].type = datasource.type;
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);

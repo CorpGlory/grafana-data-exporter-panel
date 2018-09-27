@@ -23,40 +23,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr 
-          class="panel" 
-          ng-repeat-start="panel in ctrl.panels" 
-          ng-if="panel.targets.length > 0"
-        >
+        <tr ng-repeat-start="panel in ctrl.panels"></tr>
+        <tr class="target" ng-repeat-end ng-repeat="target in panel.targets" ng-if="panel.datasource">
           <td>
             {{ panel.title }}
           </td>
-          <td>-</td>
-          <td>
-            {{ panel.datasource }}
-          </td>
-          <td>
-            <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.toggleTargetRows(panel.id)">
-              <i class="fa fa-chevron-down" ng-if="!ctrl.showRows[panel.id]"></i>
-              <i class="fa fa-chevron-up" ng-if="ctrl.showRows[panel.id]"></i>
-            </button>
-          </td>
-        </tr>
-
-        <tr
-          class="target"
-          ng-repeat-end
-          ng-repeat="target in panel.targets"
-          ng-if="ctrl.showRows[panel.id]"
-        >
-          <td></td>
           <td>
             <span class="template-variable">
               {{ target.refId }}
             </span>
-            : {{ target.measurement }}
           </td>
-          <td></td>
+          <td>
+            {{ panel.datasource || '-' }}
+          </td>
           <td>
             <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.showExportModal(panel.id, target)">
               Export

@@ -2,7 +2,7 @@
 
 ## About
 
-Panel for exporting metrics from dashboard
+Panel for exporting metrics from Grafana dashboards. Works with [grafana-data-exporter](https://github.com/CorpGlory/grafana-data-exporter) - server for exporting data.
 
 ## Quick start
 
@@ -10,5 +10,5 @@ Read [wiki page](https://github.com/CorpGlory/grafana-data-exporter-panel/wiki) 
 
 ### See Also
 
-- Based on [Webpack Template](https://github.com/CorpGlory/grafana-plugin-template-webpack)
-- [grafana-data-exporter](https://github.com/CorpGlory/grafana-data-exporter) - Server for exporting data
+Based on [Webpack Template](https://github.com/CorpGlory/grafana-plugin-template-webpack)
+

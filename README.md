@@ -1,7 +1,5 @@
 # Grafana Data Exporter panel
 
-## About
-
 Panel for exporting metrics from Grafana dashboards. 
 
 ## See also 

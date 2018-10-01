@@ -2,7 +2,7 @@ import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
 
-import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
+import { PanelCtrl } from 'grafana/app/plugins/sdk';
 import { appEvents } from 'grafana/app/core/core';
 
 import _ from 'lodash';
@@ -17,7 +17,7 @@ const PANEL_DEFAULTS = {
   backendUrl: ''
 }
 
-class Ctrl extends MetricsPanelCtrl {
+class Ctrl extends PanelCtrl {
   private _panelPath: string;
   private _partialsPath: string;
   public showRows: Object;
@@ -37,6 +37,8 @@ class Ctrl extends MetricsPanelCtrl {
   private _datasourceRequest: any;
 
   static templateUrl = 'partials/module.html';
+  private timeSrv: any;
+  private range: any;
 
   /** @ngInject */
   constructor($scope, $injector, private backendSrv, public templateSrv) {
@@ -48,6 +50,8 @@ class Ctrl extends MetricsPanelCtrl {
 
     this.events.on('render', this._onRender.bind(this));
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
+
+    this.timeSrv = $injector.get('timeSrv');
 
     appEvents.on('ds-request-response', data => {
       let requestConfig = data.config;
@@ -109,6 +113,7 @@ class Ctrl extends MetricsPanelCtrl {
 
   private _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
+    this.range = this.timeSrv.timeRange();
   }
 
   private _onInitEditMode() {

@@ -37,7 +37,7 @@ class Ctrl extends PanelCtrl {
   private _datasourceRequest: any;
 
   static templateUrl = 'partials/module.html';
-  timeSrv: any;
+  private timeSrv: any;
   range: any;
 
   /** @ngInject */
@@ -52,7 +52,6 @@ class Ctrl extends PanelCtrl {
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
 
     this.timeSrv = $injector.get('timeSrv');
-    this.range = this.timeSrv.timeRange();
 
     appEvents.on('ds-request-response', data => {
       let requestConfig = data.config;
@@ -114,6 +113,7 @@ class Ctrl extends PanelCtrl {
 
   private _onRender() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
+    this.range = this.timeSrv.timeRange();
   }
 
   private _onInitEditMode() {

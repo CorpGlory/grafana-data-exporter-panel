@@ -38,7 +38,7 @@ class Ctrl extends PanelCtrl {
 
   static templateUrl = 'partials/module.html';
   private timeSrv: any;
-  range: any;
+  private range: any;
 
   /** @ngInject */
   constructor($scope, $injector, private backendSrv, public templateSrv) {

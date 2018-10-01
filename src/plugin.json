@@ -8,6 +8,10 @@
       "name": "CorpGlory",
       "url": "corpglory.com"
     },
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    },
     "keywords": [],
     "links": [],
     "screenshots": [],

@@ -34,7 +34,10 @@ class Ctrl extends PanelCtrl {
     from: Boolean,
     to: Boolean
   };
-  private _datasourceRequest: any;
+  private _datasourceRequests: any;
+  private _datasourceTypes: any;
+  private _datasources: any;
+  private _user: string;
 
   static templateUrl = 'partials/module.html';
   private timeSrv: any;
@@ -46,9 +49,11 @@ class Ctrl extends PanelCtrl {
     _.defaults(this.panel, PANEL_DEFAULTS);
     this._panelPath = `/public/plugins/${this.pluginId}`;
     this._partialsPath = `${this._panelPath}/partials`;
-    this._datasourceRequest = {};
+    this._datasourceRequests = {};
+    this._datasources = {};
+    this._datasourceTypes = {};
 
-    this.events.on('render', this._onRender.bind(this));
+    this.events.on('refresh', this._onRefresh.bind(this));
     this.events.on('init-edit-mode', this._onInitEditMode.bind(this));
 
     this.timeSrv = $injector.get('timeSrv');
@@ -62,7 +67,7 @@ class Ctrl extends PanelCtrl {
 
       let datasourceId = datasourceIdRegExp[1];
 
-      this._datasourceRequest[datasourceId] = {
+      this._datasourceRequests[datasourceId] = {
         url: requestConfig.url,
         method: requestConfig.method,
         data: requestConfig.data,
@@ -89,17 +94,20 @@ class Ctrl extends PanelCtrl {
   }
 
   private async _getCurrentUser() {
-    return this.backendSrv.get('/api/user')
-      .then(data => data.login);
+    if(this._user === undefined) {
+      return await this.backendSrv.get('/api/user')
+        .then(data => data.login);
+    } else {
+      return this._user;
+    }
   }
 
-  private async _getDatasourceIdByName(name: string) {
-    return this.backendSrv.get(`/api/datasources/id/${name}`)
-      .then(data => data.id);
-  }
-
-  private _getDatasourceByName(name: string) {
-    return this.backendSrv.get(`/api/datasources/name/${name}`);
+  private async _getDatasourceByName(name: string) {
+    if(this._datasources[name] === undefined) {
+      return await this.backendSrv.get(`/api/datasources/name/${name}`);
+    } else {
+      return this._datasources[name];
+    }
   }
 
   private _initStyles() {
@@ -111,9 +119,10 @@ class Ctrl extends PanelCtrl {
     }
   }
 
-  private _onRender() {
+  private _onRefresh() {
     this._element.find('.table-panel-scroll').css({ 'max-height': this._getTableHeight() });
     this.range = this.timeSrv.timeRange();
+    this._getGrafanaAPIInfo();
   }
 
   private _onInitEditMode() {
@@ -151,6 +160,18 @@ class Ctrl extends PanelCtrl {
     });
   }
 
+  private async _getGrafanaAPIInfo() {
+    this._user = await this._getCurrentUser();
+    for(let panel of this.panels) {
+      let datasourceName = panel.datasource;
+      if(datasourceName === undefined) {
+        continue;
+      }
+      let datasource = await this._getDatasourceByName(datasourceName);
+      this._datasourceTypes[panel.id] = datasource.type;
+    }
+  }
+
   toggleTargetRows(panelId) {
     this.showRows[panelId] = !this.showRows[panelId];
     this.render();
@@ -167,17 +188,14 @@ class Ctrl extends PanelCtrl {
   async export(panelId, target) {
     let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
 
-    let user = await this._getCurrentUser();
-
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
     let datasource = await this._getDatasourceByName(datasourceName);
     let datasourceId = datasource.id;
-    if(this._datasourceRequest[datasourceId] === undefined) {
+    if(this._datasourceRequests[datasourceId] === undefined) {
       appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
-      throw new Error(`_datasourceRequest[${datasourceId}] is undefined`);
+      throw new Error(`_datasourceRequests[${datasourceId}] is undefined`);
     }
-    this._datasourceRequest[datasourceId].type = datasource.type;
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://')) {
@@ -192,9 +210,9 @@ class Ctrl extends PanelCtrl {
       to: moment(this.rangeOverride.to).valueOf(),
       panelUrl,
       target,
-      datasourceRequest: this._datasourceRequest[datasourceId],
+      datasourceRequest: this._datasourceRequests[datasourceId],
       datasourceName,
-      user
+      user: this._user
     })
       .then(data => {
         appEvents.emit('alert-success', ['Task added', data]);
@@ -203,6 +221,19 @@ class Ctrl extends PanelCtrl {
         this.timeSrv.refreshDashboard();
       })
       .catch(err => appEvents.emit('alert-error', [`Error while adding task at ${err.config.url}`, err.statusText]));
+  }
+
+  getDatasource(panel) {
+    let datasource = '';
+    if(panel.datasource) {
+      datasource += panel.datasource;
+    } else {
+      return '-';
+    }
+    if(this._datasourceTypes[panel.id]) {
+      datasource += ` (${this._datasourceTypes[panel.id]})`
+    }
+    return datasource;
   }
 
   clearRange() {

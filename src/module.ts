@@ -231,7 +231,7 @@ class Ctrl extends PanelCtrl {
       return '-';
     }
     if(this._datasourceTypes[panel.id]) {
-      datasource += ` (${this._datasourceTypes[panel.id]})`
+      datasource += ` (${this._datasourceTypes[panel.id]})`;
     }
     return datasource;
   }

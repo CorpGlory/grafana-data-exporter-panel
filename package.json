@@ -1,7 +1,7 @@
 {
   "name": "grafana-data-exporter-panel",
-  "version": "0.3.3",
-  "description": "Data Exporter plugin",
+  "version": "0.3.4",
+  "description": "Data Exporter Plugin",
   "main": "src/module.js",
   "scripts": {
     "build": "webpack --config build/webpack.prod.conf.js",

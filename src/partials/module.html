@@ -34,7 +34,7 @@
             </span>
           </td>
           <td>
-            {{ panel.datasource || '-' }}
+            {{ ctrl.getDatasource(panel) }}
           </td>
           <td>
             <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.showExportModal(panel.id, target)">

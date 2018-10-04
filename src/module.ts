@@ -164,7 +164,7 @@ class Ctrl extends PanelCtrl {
     this._user = await this._getCurrentUser();
     for(let panel of this.panels) {
       let datasourceName = panel.datasource;
-      if(datasourceName === undefined) {
+      if(datasourceName === undefined || datasourceName === null) {
         continue;
       }
       let datasource = await this._getDatasourceByName(datasourceName);

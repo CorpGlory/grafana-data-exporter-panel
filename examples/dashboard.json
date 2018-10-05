@@ -171,7 +171,7 @@
         {
           "alias": "Time",
           "dateFormat": "YYYY-MM-DD HH:mm:ss",
-          "pattern": "Time",
+          "pattern": "Progress updated",
           "type": "date"
         },
         {

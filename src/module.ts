@@ -164,7 +164,7 @@ class Ctrl extends PanelCtrl {
     this._user = await this._getCurrentUser();
     for(let panel of this.panels) {
       let datasourceName = panel.datasource;
-      if(datasourceName === undefined) {
+      if(!datasourceName) {
         continue;
       }
       let datasource = await this._getDatasourceByName(datasourceName);
@@ -196,6 +196,7 @@ class Ctrl extends PanelCtrl {
       appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
       throw new Error(`_datasourceRequests[${datasourceId}] is undefined`);
     }
+    this._datasourceRequests[datasourceId].type = this._datasourceTypes[panelId];
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://')) {

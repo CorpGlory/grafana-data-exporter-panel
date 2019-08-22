@@ -186,6 +186,12 @@ class Ctrl extends PanelCtrl {
   }
 
   async export(panelId, target) {
+    if(this.panel.backendUrl === undefined || this.panel.backendUrl === null) {
+      const msg = 'Backend URL not set';
+      appEvents.emit('alert-error', [msg]);
+      throw new Error(msg);
+    }
+
     let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
 
     let panel = this.panels.find(el => el.id === panelId);

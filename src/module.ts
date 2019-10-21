@@ -227,7 +227,8 @@ class Ctrl extends PanelCtrl {
     }
     this._datasourceRequests[datasourceId].type = this._datasourceTypes[panelId];
 
-    const formattedUrl = this.normalizeUrl(this.panel.backendUrl);
+    const urlWithReplacedTemplateVars = this.templateSrv.replace(this.panel.backendUrl);
+    const formattedUrl = this.normalizeUrl(urlWithReplacedTemplateVars);
 
     this.backendSrv.post(`${formattedUrl}/tasks`, {
       from: moment(this.rangeOverride.from).valueOf(),

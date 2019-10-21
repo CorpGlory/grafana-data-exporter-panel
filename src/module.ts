@@ -223,9 +223,9 @@ class Ctrl extends PanelCtrl {
     let datasourceId = datasource.id;
     if(this._datasourceRequests[datasourceId] === undefined) {
       appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
+      console.log(this._datasourceRequests)
       throw new Error(`_datasourceRequests[${datasourceId}] is undefined`);
     }
-    console.log(this._datasourceRequests)
     this._datasourceRequests[datasourceId].type = this._datasourceTypes[panelId];
 
     const urlWithReplacedTemplateVars = this.templateSrv.replace(this.panel.backendUrl);

@@ -60,8 +60,6 @@ class Ctrl extends PanelCtrl {
 
     appEvents.on('ds-request-response', data => {
       let requestConfig = data.config;
-      let datasourceId: string;
-      console.log(data);
 
       if(requestConfig.data !== undefined && requestConfig.data.queries !== undefined) {
 

@@ -59,9 +59,11 @@ class Ctrl extends PanelCtrl {
     this.timeSrv = $injector.get('timeSrv');
 
     appEvents.on('ds-request-response', data => {
-      let requestConfig = data.config;
+      const requestConfig = data.config;
+      const isSqlDatasource = requestConfig.data !== undefined &&
+        requestConfig.data.queries !== undefined;
 
-      if(requestConfig.data !== undefined && requestConfig.data.queries !== undefined) {
+      if(isSqlDatasource) {
 
         for(let query of requestConfig.data.queries) {
           this._datasourceRequests[query.datasourceId] = {
@@ -72,12 +74,12 @@ class Ctrl extends PanelCtrl {
           };
         }
       } else {
-        let datasourceIdRegExp = requestConfig.url.match(/proxy\/(\d+)/);
-        if(datasourceIdRegExp === null) {
+        let matched = requestConfig.url.match(/proxy\/(\d+)/);
+        if(matched === null) {
           throw new Error(`Cannot find datasource id in url ${requestConfig.url}`);
         }
 
-        let datasourceId = datasourceIdRegExp[1];
+        let datasourceId = matched[1];
 
         this._datasourceRequests[datasourceId] = {
           url: requestConfig.url,

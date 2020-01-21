@@ -64,7 +64,6 @@ class Ctrl extends PanelCtrl {
         requestConfig.data.queries !== undefined;
 
       if(isSqlDatasource) {
-
         for(let query of requestConfig.data.queries) {
           this._datasourceRequests[query.datasourceId] = {
             url: query.url,
@@ -78,9 +77,7 @@ class Ctrl extends PanelCtrl {
         if(matched === null) {
           throw new Error(`Cannot find datasource id in url ${requestConfig.url}`);
         }
-
         let datasourceId = matched[1];
-
         this._datasourceRequests[datasourceId] = {
           url: requestConfig.url,
           method: requestConfig.method,

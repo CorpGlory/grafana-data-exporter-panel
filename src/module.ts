@@ -122,6 +122,13 @@ class Ctrl extends PanelCtrl {
     }
   }
 
+  // TODO: specify return type here
+  private async _getDefaultDatasource() {
+    const datasources = await this.backendSrv.get(`/api/datasources`);
+
+    return datasources.find(d => d.isDefault);
+  }
+
   private _initStyles() {
     (window as any).System.import(`${this._panelPath}/css/panel.base.css!`);
     if(grafanaBootData.user.lightTheme) {
@@ -175,12 +182,19 @@ class Ctrl extends PanelCtrl {
   private async _getGrafanaAPIInfo() {
     this._user = await this._getCurrentUser();
     for(let panel of this.panels) {
-      let datasourceName = panel.datasource;
-      if(!datasourceName) {
+      if(panel.type === 'corpglory-data-exporter-panel' || panel.datasource === undefined) {
         continue;
       }
-      let datasource = await this._getDatasourceByName(datasourceName);
-      this._datasourceTypes[panel.id] = datasource.type;
+
+      if(panel.datasource === null) {
+        const datasource = await this._getDefaultDatasource();
+        panel.datasource = datasource?.name;
+
+        this._datasourceTypes[panel.id] = datasource?.type;
+      } else {
+        const datasource = await this._getDatasourceByName(panel.datasource);
+        this._datasourceTypes[panel.id] = datasource?.type
+      }
     }
   }
 

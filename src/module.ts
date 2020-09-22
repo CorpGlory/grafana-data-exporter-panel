@@ -211,7 +211,7 @@ class Ctrl extends PanelCtrl {
     this._datasourceRequests[datasourceId].type = this._datasourceTypes[panelId];
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
-    if(!formattedUrl.includes('http://') || !formattedUrl.includes('https://')) {
+    if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
       formattedUrl = `http://${formattedUrl}`;
     }
     if(formattedUrl.slice(-1) === '/') {

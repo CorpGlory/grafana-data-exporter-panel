@@ -24,7 +24,8 @@ module.exports = {
   },
   externals: [
     // remove the line below if you don't want to use buildin versions
-    'jquery', 'lodash', 'moment',
+    'jquery', 'lodash', 'moment', 'react', 'react-dom',
+    '@grafana/ui', '@grafana/data', '@grafana/runtime',
     function (context, request, callback) {
       var prefix = 'grafana/';
       if (request.indexOf(prefix) === 0) {
@@ -49,12 +50,13 @@ module.exports = {
   resolve: {
     alias: {
       'src': resolve('src')
-    }
+    },
+    extensions: ['.js', '.ts', '.tsx']
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader'

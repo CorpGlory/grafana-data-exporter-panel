@@ -17,4 +17,14 @@ panel-plugin-export-manager-panel {
 
 .modal {
   position: relative;
+  .timepicker {
+    .navbar-button--zoom {
+      display: none;
+    }
+    > div > div {
+      &>.navbar-button--tight {
+        display: none;
+      }
+    }
+  }
 }

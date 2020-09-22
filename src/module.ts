@@ -2,6 +2,8 @@ import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
 
+import './timepicker.ts';
+
 import { PanelCtrl } from 'grafana/app/plugins/sdk';
 import { appEvents } from 'grafana/app/core/core';
 
@@ -9,9 +11,6 @@ import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
 
-
-// TODO: add to types-grafana
-declare var grafanaBootData: any;
 
 const PANEL_DEFAULTS = {
   backendUrl: ''
@@ -22,13 +21,13 @@ class Ctrl extends PanelCtrl {
   private _partialsPath: string;
   public showRows: Object;
   private _element;
-  public rangeOverride: {
-    from: string,
-    to: string
-  };
-  public rangeOverrideRaw: {
-    from: string,
-    to: string
+  public rangeOverride = {
+    from: moment(),
+    to: moment(),
+    raw: {
+      from: moment(),
+      to: moment()
+    }
   };
   public datePickerShow: {
     from: Boolean,
@@ -123,11 +122,11 @@ class Ctrl extends PanelCtrl {
   }
 
   private _initStyles() {
-    (window as any).System.import(`${this._panelPath}/css/panel.base.css!`);
-    if(grafanaBootData.user.lightTheme) {
-      (window as any).System.import(`${this._panelPath}/css/panel.light.css!`);
+    window.System.import(`${this._panelPath}/css/panel.base.css!`);
+    if(window.grafanaBootData.user.lightTheme) {
+      window.System.import(`${this._panelPath}/css/panel.light.css!`);
     } else {
-      (window as any).System.import(`${this._panelPath}/css/panel.dark.css!`);
+      window.System.import(`${this._panelPath}/css/panel.dark.css!`);
     }
   }
 
@@ -189,12 +188,8 @@ class Ctrl extends PanelCtrl {
     this.render();
   }
 
-  onRangeFromChange() {
-    this.rangeOverride.from = moment(this.rangeOverrideRaw.from).format();
-  }
-
-  onRangeToChange() {
-    this.rangeOverride.to = moment(this.rangeOverrideRaw.to).format();
+  onRangeFromChange(timeRange: any) {
+    this.rangeOverride = timeRange;
   }
 
   async export(panelId, target) {
@@ -219,8 +214,8 @@ class Ctrl extends PanelCtrl {
     }
 
     this.backendSrv.post(`${formattedUrl}/tasks`, {
-      from: moment(this.rangeOverride.from).valueOf(),
-      to: moment(this.rangeOverride.to).valueOf(),
+      from: this.rangeOverride.from.valueOf(),
+      to: this.rangeOverride.to.valueOf(),
       panelUrl,
       target,
       datasourceRequest: this._datasourceRequests[datasourceId],
@@ -251,12 +246,12 @@ class Ctrl extends PanelCtrl {
 
   clearRange() {
     this.rangeOverride = {
-      from: this.range.from.toISOString(),
-      to: this.range.to.toISOString()
-    };
-    this.rangeOverrideRaw = {
-      from: this.range.from.toISOString(),
-      to: this.range.to.toISOString()
+      from: this.range.from,
+      to: this.range.to,
+      raw: {
+        from: this.range.from,
+        to: this.range.to
+      }
     };
     this.datePickerShow = {
       from: true,

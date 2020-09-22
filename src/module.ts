@@ -16,12 +16,21 @@ const PANEL_DEFAULTS = {
   backendUrl: ''
 }
 
+type TimeRange = {
+  from: moment.Moment,
+    to: moment.Moment,
+      raw: {
+    from: moment.Moment,
+      to: moment.Moment
+  }
+};
+
 class Ctrl extends PanelCtrl {
   private _panelPath: string;
   private _partialsPath: string;
   public showRows: Object;
   private _element;
-  public rangeOverride = {
+  public rangeOverride: TimeRange = {
     from: moment(),
     to: moment(),
     raw: {
@@ -188,7 +197,7 @@ class Ctrl extends PanelCtrl {
     this.render();
   }
 
-  onRangeFromChange(timeRange: any) {
+  onTimeRangeChange(timeRange: TimeRange): void {
     this.rangeOverride = timeRange;
   }
 

@@ -2,7 +2,7 @@ import './css/panel.base.scss';
 import './css/panel.dark.scss';
 import './css/panel.light.scss';
 
-import './timepicker.ts';
+import './timepicker';
 
 import { PanelCtrl } from 'grafana/app/plugins/sdk';
 import { appEvents } from 'grafana/app/core/core';

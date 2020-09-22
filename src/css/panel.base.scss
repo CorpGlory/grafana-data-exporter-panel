@@ -17,6 +17,9 @@ panel-plugin-export-manager-panel {
 
 .modal {
   position: relative;
+  .editor-row {
+    text-align: center;
+  }
   .timepicker {
     .navbar-button--zoom {
       display: none;

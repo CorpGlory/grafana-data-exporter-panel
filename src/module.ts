@@ -18,10 +18,10 @@ const PANEL_DEFAULTS = {
 
 type TimeRange = {
   from: moment.Moment,
-    to: moment.Moment,
-      raw: {
+  to: moment.Moment,
+  raw: {
     from: moment.Moment,
-      to: moment.Moment
+    to: moment.Moment
   }
 };
 

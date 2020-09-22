@@ -122,6 +122,7 @@ class Ctrl extends PanelCtrl {
     }
   }
 
+  // TODO: specify return type here
   private async _getDefaultDatasource() {
     const datasources = await this.backendSrv.get(`/api/datasources`);
 
@@ -181,11 +182,11 @@ class Ctrl extends PanelCtrl {
   private async _getGrafanaAPIInfo() {
     this._user = await this._getCurrentUser();
     for(let panel of this.panels) {
-      if (panel.type === 'corpglory-data-exporter-panel') {
+      if(panel.type === 'corpglory-data-exporter-panel' || panel.datasource === undefined) {
         continue;
       }
 
-      if (!panel.datasource) {
+      if(panel.datasource === null) {
         const datasource = await this._getDefaultDatasource();
         panel.datasource = datasource?.name;
 

@@ -16,10 +16,10 @@
     "links": [],
     "screenshots": [],
     "version": "0.3.6",
-    "updated": "2020-01-21"
+    "updated": "2020-09-22"
   },
   "dependencies": {
-    "grafanaVersion": "4.6.x 5.x",
+    "grafanaVersion": "6.2.0+",
     "plugins": []
   }
 }

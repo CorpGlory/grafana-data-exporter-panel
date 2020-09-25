@@ -66,7 +66,7 @@ class Ctrl extends PanelCtrl {
 
     this.timeSrv = $injector.get('timeSrv');
 
-    appEvents.on('ds-request-response',  data => {
+    appEvents.on('ds-request-response', data => {
       const requestConfig = data.config;
       const isSqlDatasource = requestConfig.data !== undefined &&
         requestConfig.data.queries !== undefined;

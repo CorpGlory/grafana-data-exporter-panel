@@ -13,37 +13,12 @@
   <div class="modal-content">
     <div class="editor-row">
       <div class="section gf-form-group">
-        <div class="gf-form inline">
-          <label class="gf-form-label width-4">From</label>
-          <input type="text" class="gf-form-input input-large width-15" ng-model="ctrl.rangeOverride.from" input-datetime>
-        </div>
-
-        <datepicker
+        <timepicker
           ng-if="ctrl.datePickerShow.from"
-          ng-model="ctrl.rangeOverrideRaw.from"
-          class="gf-timepicker-component"
-          show-weeks="false"
-          starting-day="1"
-          ng-change="ctrl.onRangeFromChange()"
-        >
-        </datepicker>
-      </div>
-
-      <div class="section gf-form-group">
-        <div class="gf-form inline">
-          <label class="gf-form-label width-4">To</label>
-          <input type="text" class="gf-form-input input-large width-15" ng-model="ctrl.rangeOverride.to" input-datetime>
-        </div>
-
-        <datepicker
-          ng-if="ctrl.datePickerShow.to"
-          ng-model="ctrl.rangeOverrideRaw.to"
-          class="gf-timepicker-component"
-          show-weeks="false"
-          starting-day="1"
-          ng-change="ctrl.onRangeToChange()"
-        >
-        </datepicker>
+          class="timepicker"
+          value="ctrl.rangeOverride"
+          onChange="ctrl.onTimeRangeChange.bind(ctrl)"
+        />
       </div>
     </div>
 

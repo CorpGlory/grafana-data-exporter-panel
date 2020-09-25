@@ -222,11 +222,13 @@ class Ctrl extends PanelCtrl {
     let datasourceName = panel.datasource;
     let datasource = await this._getDatasourceByName(datasourceName);
     let datasourceId = datasource.id;
-    if(this._datasourceRequests[datasourceId] === undefined) {
+    const datasourceRequest = this._datasourceRequests[datasourceId];
+
+    if(datasourceRequest === undefined) {
       appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
       throw new Error(`_datasourceRequests[${datasourceId}] is undefined`);
     }
-    this._datasourceRequests[datasourceId].type = this._datasourceTypes[panelId];
+    datasourceRequest.type = this._datasourceTypes[panelId];
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
@@ -236,12 +238,16 @@ class Ctrl extends PanelCtrl {
       formattedUrl = formattedUrl.slice(0, -1);
     }
 
+    if(!datasourceRequest.datasourceId && datasourceRequest.datasourceId !== 0) {
+      datasourceRequest.datasourceId = datasourceId;
+    }
+
     this.backendSrv.post(`${formattedUrl}/tasks`, {
       from: this.rangeOverride.from.valueOf(),
       to: this.rangeOverride.to.valueOf(),
       panelUrl,
       target,
-      datasourceRequest: this._datasourceRequests[datasourceId],
+      datasourceRequest,
       datasourceName,
       user: this._user
     })

@@ -58,13 +58,19 @@ class Ctrl extends PanelCtrl {
 
     this.timeSrv = $injector.get('timeSrv');
 
-    appEvents.on('ds-request-response', data => {
+    appEvents.on('ds-request-response', async data => {
       const requestConfig = data.config;
       const isSqlDatasource = requestConfig.data !== undefined &&
         requestConfig.data.queries !== undefined;
 
       if(isSqlDatasource) {
         for(let query of requestConfig.data.queries) {
+          if (!query.url) {
+            const datasource = await this._getDatasourceById(query.datasourceId);
+
+            query.url = datasource.url;
+          }
+
           this._datasourceRequests[query.datasourceId] = {
             url: query.url,
             method: query.method,
@@ -120,6 +126,17 @@ class Ctrl extends PanelCtrl {
     } else {
       return this._datasources[name];
     }
+  }
+
+  private _getDatasourceById(id: number) {
+    const existedkey = this._datasources && Object.keys(this._datasources)
+        .find(key => this._datasources[key].id === id);
+    const existed = this._datasources[existedkey];
+
+    if (existed) {
+      return existed;
+    }
+    return this.backendSrv.get(`/api/datasources/${id}`);
   }
 
   // TODO: specify return type here

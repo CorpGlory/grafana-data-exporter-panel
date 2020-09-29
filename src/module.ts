@@ -287,7 +287,6 @@ class Ctrl extends PanelCtrl {
       this.clearRange();
       this.timeSrv.refreshDashboard();
     } catch(err) {
-      console.log(JSON.stringify(err))
       appEvents.emit('alert-error', [
         `Error while adding task at ${err.config.url}`, 
         err.statusText !== '' ? err.statusText : 'grafana-data-exporter is not available'

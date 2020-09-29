@@ -247,8 +247,8 @@ class Ctrl extends PanelCtrl {
 
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
-    let datasourceRequest = null;
 
+    let datasourceRequest;
     try {
       datasourceRequest = await this._getDatasourceRequest(datasourceName);
     } catch (e) {

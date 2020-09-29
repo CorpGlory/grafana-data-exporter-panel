@@ -10,6 +10,7 @@ import { appEvents } from 'grafana/app/core/core';
 import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
+import { DatasourceRequest } from 'models/datasource';
 
 
 const PANEL_DEFAULTS = {
@@ -83,7 +84,8 @@ class Ctrl extends PanelCtrl {
       } else {
         let matched = requestConfig.url.match(/proxy\/(\d+)/);
         if(matched === null) {
-          throw new Error(`Cannot find datasource id in url ${requestConfig.url}`);
+          console.error(`Cannot find datasource id in url ${requestConfig.url}`);
+          return;
         }
         let datasourceId = matched[1];
         this._datasourceRequests[datasourceId] = {
@@ -215,20 +217,50 @@ class Ctrl extends PanelCtrl {
     this.rangeOverride = timeRange;
   }
 
-  async export(panelId, target) {
+  private async _getDatasourceRequest(name: string): Promise<DatasourceRequest> {
+    const datasource = await this._getDatasourceByName(name);
+    const datasourceId = datasource.id;
+    const datasourceRequest = this._datasourceRequests[datasourceId];
+
+    if(datasource.access !== 'proxy') {
+      throw new Error(`"${datasource.name}" datasource has "Browser" access type but only "Server" is supported`);
+    }
+
+    if(datasourceRequest === undefined) {
+      throw new Error('Datasource is not set. If it`s Grafana-test-datasource then it`s not supported');
+    }
+    if(datasourceRequest.type === undefined || datasourceRequest.type === null) {
+      datasourceRequest.type = datasource.type
+    }
+
+    if(datasourceRequest.datasourceId === undefined) {
+      datasourceRequest.datasourceId = datasourceId;
+    }
+
+    return datasourceRequest;
+  }
+
+  async export(panelId: string, target: any): Promise<void> {
+    // TODO: support org_id
     let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
 
     let panel = this.panels.find(el => el.id === panelId);
     let datasourceName = panel.datasource;
-    let datasource = await this._getDatasourceByName(datasourceName);
-    let datasourceId = datasource.id;
-    const datasourceRequest = this._datasourceRequests[datasourceId];
+    let datasourceRequest = null;
 
-    if(datasourceRequest === undefined) {
-      appEvents.emit('alert-error', ['Error while exporting from datasource', `Datasource ${datasourceName} is not available`]);
-      throw new Error(`_datasourceRequests[${datasourceId}] is undefined`);
+    try {
+      datasourceRequest = await this._getDatasourceRequest(datasourceName);
+    } catch (e) {
+      appEvents.emit(
+        'alert-error',
+        [
+          'Error while adding export task',
+          e.message
+        ]
+      );
+
+      return;
     }
-    datasourceRequest.type = this._datasourceTypes[panelId];
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
@@ -238,26 +270,28 @@ class Ctrl extends PanelCtrl {
       formattedUrl = formattedUrl.slice(0, -1);
     }
 
-    if(!datasourceRequest.datasourceId && datasourceRequest.datasourceId !== 0) {
-      datasourceRequest.datasourceId = datasourceId;
+    try {
+      const resp = await this.backendSrv.post(`${formattedUrl}/tasks`, {
+        from: this.rangeOverride.from.valueOf(),
+        to: this.rangeOverride.to.valueOf(),
+        panelUrl,
+        target,
+        datasourceRequest,
+        datasourceName,
+        user: this._user
+      });
+    
+      appEvents.emit('alert-success', ['Task added', resp]);
+      appEvents.emit('hide-modal');
+      this.clearRange();
+      this.timeSrv.refreshDashboard();
+    } catch(err) {
+      console.log(JSON.stringify(err))
+      appEvents.emit('alert-error', [
+        `Error while adding task at ${err.config.url}`, 
+        err.statusText !== '' ? err.statusText : 'grafana-data-exporter is not available'
+      ]);
     }
-
-    this.backendSrv.post(`${formattedUrl}/tasks`, {
-      from: this.rangeOverride.from.valueOf(),
-      to: this.rangeOverride.to.valueOf(),
-      panelUrl,
-      target,
-      datasourceRequest,
-      datasourceName,
-      user: this._user
-    })
-      .then(data => {
-        appEvents.emit('alert-success', ['Task added', data]);
-        appEvents.emit('hide-modal');
-        this.clearRange();
-        this.timeSrv.refreshDashboard();
-      })
-      .catch(err => appEvents.emit('alert-error', [`Error while adding task at ${err.config.url}`, err.statusText]));
   }
 
   getDatasource(panel) {

@@ -232,7 +232,7 @@ class Ctrl extends PanelCtrl {
     }
 
     if(datasourceRequest.type === undefined || datasourceRequest.type === null) {
-      datasourceRequest.type = datasource.type
+      datasourceRequest.type = datasource.type;
     }
     if(datasourceRequest.datasourceId === undefined) {
       datasourceRequest.datasourceId = datasourceId;

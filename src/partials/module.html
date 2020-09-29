@@ -36,11 +36,12 @@
           <td>
             {{ ctrl.getDatasource(panel) }}
           </td>
-          <td style="display: inline-block" bs-tooltip="!panel.datasource ? 'Datasource is not supported' : null">
+          <td class="export-button-td" bs-tooltip="panel.datasource === undefined ? 'Datasource is not supported' : null">
             <button class="btn gf-form-btn btn-primary"
-              ng-class="{'disabled-button': !panel.datasource}"
+              ng-class="{'disabled-button': panel.datasource === undefined}"
               type="button"
-              ng-click="ctrl.showExportModal(panel.id, target)">
+              ng-click="ctrl.showExportModal(panel.id, target)"
+            >
               <div>Export</div>
             </button>
           </td>

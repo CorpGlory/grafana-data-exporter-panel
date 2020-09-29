@@ -24,7 +24,7 @@
       </thead>
       <tbody>
         <tr ng-repeat-start="panel in ctrl.panels"></tr>
-        <tr class="target" ng-repeat-end ng-repeat="target in panel.targets" ng-if="panel.datasource">
+        <tr class="target" ng-repeat-end ng-repeat="target in panel.targets" ng-if="panel.type !== 'corpglory-data-exporter-panel'">
           <td>
             {{ panel.title }}
           </td>
@@ -36,10 +36,13 @@
           <td>
             {{ ctrl.getDatasource(panel) }}
           </td>
-          <td>
-            <button class="btn gf-form-btn btn-primary" type="button" ng-click="ctrl.showExportModal(panel.id, target)">
-              Export
-            </button>
+          <td style="display: inline-block" bs-tooltip="!panel.datasource ? 'Datasource is not supported' : null">
+              <button class="btn gf-form-btn btn-primary"
+                      ng-class="{'disabled-button': !panel.datasource}"
+                      type="button"
+                      ng-click="ctrl.showExportModal(panel.id, target)">
+                <div>Export</div>
+              </button>
           </td>
         </tr>
       </tbody>

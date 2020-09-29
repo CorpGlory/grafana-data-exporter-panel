@@ -31,3 +31,8 @@ panel-plugin-export-manager-panel {
     }
   }
 }
+
+.disabled-button {
+  opacity: 50%;
+  pointer-events: none;
+}

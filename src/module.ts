@@ -220,6 +220,11 @@ class Ctrl extends PanelCtrl {
 
   private async _getDatasourceRequest(name: string): Promise<DatasourceRequest> {
     const datasource = await this._getDatasourceByName(name);
+
+    if(datasource === undefined) {
+      throw new Error(`Can't get info about "${name}" datasource`);
+    }
+
     const datasourceId = datasource.id;
 
     if(datasource.access !== 'proxy') {

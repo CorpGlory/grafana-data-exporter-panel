@@ -1,6 +1,6 @@
 {
   "name": "grafana-data-exporter-panel",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "description": "Data Exporter Plugin",
   "main": "src/module.js",
   "scripts": {

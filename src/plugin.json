@@ -15,8 +15,8 @@
     "keywords": [],
     "links": [],
     "screenshots": [],
-    "version": "0.3.6",
-    "updated": "2020-09-22"
+    "version": "0.4.0",
+    "updated": "2020-09-29"
   },
   "dependencies": {
     "grafanaVersion": "6.2.0+",

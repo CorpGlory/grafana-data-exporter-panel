@@ -221,19 +221,19 @@ class Ctrl extends PanelCtrl {
   private async _getDatasourceRequest(name: string): Promise<DatasourceRequest> {
     const datasource = await this._getDatasourceByName(name);
     const datasourceId = datasource.id;
-    const datasourceRequest = this._datasourceRequests[datasourceId];
 
     if(datasource.access !== 'proxy') {
       throw new Error(`"${datasource.name}" datasource has "Browser" access type but only "Server" is supported`);
     }
 
+    const datasourceRequest = this._datasourceRequests[datasourceId];
     if(datasourceRequest === undefined) {
       throw new Error('Datasource is not set. If it`s Grafana-test-datasource then it`s not supported');
     }
+
     if(datasourceRequest.type === undefined || datasourceRequest.type === null) {
       datasourceRequest.type = datasource.type
     }
-
     if(datasourceRequest.datasourceId === undefined) {
       datasourceRequest.datasourceId = datasourceId;
     }
@@ -281,14 +281,14 @@ class Ctrl extends PanelCtrl {
         datasourceName,
         user: this._user
       });
-    
+
       appEvents.emit('alert-success', ['Task added', resp]);
       appEvents.emit('hide-modal');
       this.clearRange();
       this.timeSrv.refreshDashboard();
     } catch(err) {
       appEvents.emit('alert-error', [
-        `Error while adding task at ${err.config.url}`, 
+        `Error while adding task at ${err.config.url}`,
         err.statusText !== '' ? err.statusText : 'grafana-data-exporter is not available'
       ]);
     }

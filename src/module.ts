@@ -4,13 +4,14 @@ import './css/panel.light.scss';
 
 import './timepicker';
 
+import { DatasourceRequest } from './models/datasource';
+
 import { PanelCtrl } from 'grafana/app/plugins/sdk';
 import { appEvents } from 'grafana/app/core/core';
 
 import _ from 'lodash';
 import $ from 'jquery';
 import moment from 'moment';
-import { DatasourceRequest } from 'models/datasource';
 
 
 const PANEL_DEFAULTS = {

@@ -258,9 +258,6 @@ class Ctrl extends PanelCtrl {
       (panelId === null || panel.id === panelId)
     );
 
-    console.log('Export panels', exportPanels);
-
-
     let datasourceTable = {};
     try {
       await Promise.all(exportPanels.map(async panel => {
@@ -286,8 +283,6 @@ class Ctrl extends PanelCtrl {
       datasourceName: panel.datasource,
       target
     }))).flat();
-
-    console.log(data);
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {

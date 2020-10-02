@@ -250,26 +250,20 @@ class Ctrl extends PanelCtrl {
    * Create task for export data from panels
    * @param panelId Panel ID, if null, then export data from all panels
    */
-  async export(panelId: string | null, target: any): Promise<void> {
-
+  async export(panelId: string | null, target: object | null): Promise<void> {
     const exportPanels = this.panels.filter(panel =>
       panel.datasource !== undefined &&
+      panel.datasource !== 'SimpleJson' &&
       panel.type !== this.selfType &&
       (panelId === null || panel.id === panelId)
     );
 
     let datasourceTable = {};
     try {
-      let datasources = await this.backendSrv.get(`/api/datasources`) ;
-
-      const exportTable = _.keyBy(exportPanels, 'datasource');
-      datasourceTable = (datasources as {name: string}[])
-        .reduce((result, item) => {
-        if(exportTable[item.name]) {
-          result[item.name] = this._formatDatasourceRequest(item);
-        }
-        return result;
-      });
+      await Promise.all(exportPanels.map(async panel => {
+        const datasource = await this._getDatasourceByName(panel.datasource);
+        datasourceTable[panel.datasource] = this._formatDatasourceRequest(datasource);
+      }));
     } catch (e) {
       appEvents.emit(
         'alert-error',
@@ -283,11 +277,12 @@ class Ctrl extends PanelCtrl {
     }
 
     // TODO: support org_id
-    const data = exportPanels.map(panel => ({
+    const data = exportPanels.map(panel => panel.targets.map(target => ({
       panelUrl: window.location.origin + window.location.pathname + `?panelId=${panel.id}&fullscreen`,
       datasourceRequest: datasourceTable[panel.datasource],
-      datasourceName: panel.datasource
-    }));
+      datasourceName: panel.datasource,
+      target
+    }))).flat();
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
@@ -302,7 +297,6 @@ class Ctrl extends PanelCtrl {
         from: this.rangeOverride.from.valueOf(),
         to: this.rangeOverride.to.valueOf(),
         data,
-        target,
         user: this._user
       });
 

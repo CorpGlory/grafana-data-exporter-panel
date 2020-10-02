@@ -24,7 +24,7 @@
       </thead>
       <tbody>
         <tr ng-repeat-start="panel in ctrl.panels"></tr>
-        <tr class="target" ng-repeat-end ng-repeat="target in panel.targets" ng-if="panel.type !== 'corpglory-data-exporter-panel'">
+        <tr class="target" ng-repeat-end ng-repeat="target in panel.targets" ng-if="panel.type !== selfType">
           <td>
             {{ panel.title }}
           </td>
@@ -48,5 +48,13 @@
         </tr>
       </tbody>
     </table>
+    <button class="btn gf-form-btn btn-primary"
+      id="export-button"
+      ng-if="!!ctrl.panels.length"
+      type="button"
+      ng-click="ctrl.showExportModal(null, target)"
+    >
+      <div>Export all</div>
+    </button>
   </div>
 </div>

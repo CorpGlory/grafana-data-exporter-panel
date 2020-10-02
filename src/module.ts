@@ -246,6 +246,10 @@ class Ctrl extends PanelCtrl {
     return datasourceRequest;
   }
 
+  /**
+   * Create task for export data from panels
+   * @param panelId Panel ID, if null, then export data from all panels
+   */
   async export(panelId: string | null, target: any): Promise<void> {
 
     const exportPanels = this.panels.filter(panel =>
@@ -254,14 +258,14 @@ class Ctrl extends PanelCtrl {
       (panelId === null || panel.id === panelId)
     );
 
-    let datasources = {};
+    let datasourceTable = {};
     try {
-      datasources = await this.backendSrv.get(`/api/datasources`) ;
+      let datasources = await this.backendSrv.get(`/api/datasources`) ;
 
       const exportTable = _.keyBy(exportPanels, 'datasource');
-      datasources = (datasources as {name: string}[])
+      datasourceTable = (datasources as {name: string}[])
         .reduce((result, item) => {
-        if (exportTable[item.name]) {
+        if(exportTable[item.name]) {
           result[item.name] = this._formatDatasourceRequest(item);
         }
         return result;
@@ -281,7 +285,7 @@ class Ctrl extends PanelCtrl {
     // TODO: support org_id
     const data = exportPanels.map(panel => ({
       panelUrl: window.location.origin + window.location.pathname + `?panelId=${panel.id}&fullscreen`,
-      datasourceRequest: datasources[panel.datasource],
+      datasourceRequest: datasourceTable[panel.datasource],
       datasourceName: panel.datasource
     }));
 

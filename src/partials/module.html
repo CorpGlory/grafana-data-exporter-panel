@@ -50,7 +50,7 @@
     </table>
     <button class="btn gf-form-btn btn-primary"
       id="export-button"
-      ng-if="!!ctrl.panels.length"
+      ng-if="ctrl.panels.length > 0"
       type="button"
       ng-click="ctrl.showExportModal(null, target)"
     >

@@ -75,6 +75,8 @@ class Ctrl extends PanelCtrl {
       const isSqlDatasource = requestConfig.data !== undefined &&
         requestConfig.data.queries !== undefined;
 
+      console.log('ds-request-response!!!!!!!')
+
       if(isSqlDatasource) {
         for(let query of requestConfig.data.queries) {
           this._datasourceRequests[query.datasourceId] = {
@@ -250,17 +252,23 @@ class Ctrl extends PanelCtrl {
    * Create task for export data from panels
    * @param panelId Panel ID, if null, then export data from all panels
    */
-  async export(panelId: string | null, target: any): Promise<void> {
-
+  async export(panelId: string | null, target: object | null): Promise<void> {
     const exportPanels = this.panels.filter(panel =>
       panel.datasource !== undefined &&
+      panel.datasource !== 'SimpleJson' &&
       panel.type !== this.selfType &&
       (panelId === null || panel.id === panelId)
     );
 
+    console.log('Export panels', exportPanels);
+
+
     let datasourceTable = {};
     try {
       let datasources = await this.backendSrv.get(`/api/datasources`) ;
+
+      console.log('DATASROUCES', datasources);
+      console.log('REQUESTS', this._datasourceRequests);
 
       const exportTable = _.keyBy(exportPanels, 'datasource');
       datasourceTable = (datasources as {name: string}[])
@@ -283,11 +291,14 @@ class Ctrl extends PanelCtrl {
     }
 
     // TODO: support org_id
-    const data = exportPanels.map(panel => ({
+    const data = exportPanels.map(panel => panel.targets.map(target => ({
       panelUrl: window.location.origin + window.location.pathname + `?panelId=${panel.id}&fullscreen`,
       datasourceRequest: datasourceTable[panel.datasource],
-      datasourceName: panel.datasource
-    }));
+      datasourceName: panel.datasource,
+      target
+    })));
+
+    console.log(data);
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
@@ -302,7 +313,6 @@ class Ctrl extends PanelCtrl {
         from: this.rangeOverride.from.valueOf(),
         to: this.rangeOverride.to.valueOf(),
         data,
-        target,
         user: this._user
       });
 

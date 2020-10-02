@@ -28,10 +28,12 @@ type TimeRange = {
 };
 
 class Ctrl extends PanelCtrl {
+  private readonly selfType = 'corpglory-data-exporter-panel';
+
   private _panelPath: string;
   private _partialsPath: string;
-  public showRows: Object;
-  private _element;
+  public showRows: TDictionary<number, boolean>;
+  private _element: JQuery;
   public rangeOverride: TimeRange = {
     from: moment(),
     to: moment(),
@@ -44,8 +46,8 @@ class Ctrl extends PanelCtrl {
     from: Boolean,
     to: Boolean
   };
-  private _datasourceRequests: any;
-  private _datasourceTypes: any;
+  private _datasourceRequests: TDictionary<number, DatasourceRequest>;
+  private _datasourceTypes: TDictionary<number, string>;
   private _datasources: any;
   private _user: string;
 
@@ -107,7 +109,7 @@ class Ctrl extends PanelCtrl {
     });
   }
 
-  link(scope, element) {
+  link(scope, element: JQuery) {
     this._element = element;
     this._initStyles();
 
@@ -165,7 +167,7 @@ class Ctrl extends PanelCtrl {
     return this.height - 31 + 'px';
   }
 
-  showExportModal(panelId, target) {
+  showExportModal(panelId: number | null, target) {
     this.clearRange();
     let modalScope = this.$scope.$new(true);
     modalScope.ctrl = this;
@@ -193,7 +195,7 @@ class Ctrl extends PanelCtrl {
   private async _getGrafanaAPIInfo() {
     this._user = await this._getCurrentUser();
     for(let panel of this.panels) {
-      if(panel.type === 'corpglory-data-exporter-panel' || panel.datasource === undefined) {
+      if(panel.type === this.selfType || panel.datasource === undefined) {
         continue;
       }
 
@@ -218,14 +220,12 @@ class Ctrl extends PanelCtrl {
     this.rangeOverride = timeRange;
   }
 
-  private async _getDatasourceRequest(name: string): Promise<DatasourceRequest> {
-    const datasource = await this._getDatasourceByName(name);
-
+  private _formatDatasourceRequest(datasource: any): DatasourceRequest {
     if(datasource === undefined) {
       throw new Error(`Can't get info about "${name}" datasource`);
     }
 
-    const datasourceId = datasource.id;
+    const datasourceId: number = datasource.id;
 
     if(datasource.access !== 'proxy') {
       throw new Error(`"${datasource.name}" datasource has "Browser" access type but only "Server" is supported`);
@@ -246,16 +246,30 @@ class Ctrl extends PanelCtrl {
     return datasourceRequest;
   }
 
-  async export(panelId: string, target: any): Promise<void> {
-    // TODO: support org_id
-    let panelUrl = window.location.origin + window.location.pathname + `?panelId=${panelId}&fullscreen`;
+  /**
+   * Create task for export data from panels
+   * @param panelId Panel ID, if null, then export data from all panels
+   */
+  async export(panelId: string | null, target: any): Promise<void> {
 
-    let panel = this.panels.find(el => el.id === panelId);
-    let datasourceName = panel.datasource;
+    const exportPanels = this.panels.filter(panel =>
+      panel.datasource !== undefined &&
+      panel.type !== this.selfType &&
+      (panelId === null || panel.id === panelId)
+    );
 
-    let datasourceRequest;
+    let datasourceTable = {};
     try {
-      datasourceRequest = await this._getDatasourceRequest(datasourceName);
+      let datasources = await this.backendSrv.get(`/api/datasources`) ;
+
+      const exportTable = _.keyBy(exportPanels, 'datasource');
+      datasourceTable = (datasources as {name: string}[])
+        .reduce((result, item) => {
+        if(exportTable[item.name]) {
+          result[item.name] = this._formatDatasourceRequest(item);
+        }
+        return result;
+      });
     } catch (e) {
       appEvents.emit(
         'alert-error',
@@ -267,6 +281,13 @@ class Ctrl extends PanelCtrl {
 
       return;
     }
+
+    // TODO: support org_id
+    const data = exportPanels.map(panel => ({
+      panelUrl: window.location.origin + window.location.pathname + `?panelId=${panel.id}&fullscreen`,
+      datasourceRequest: datasourceTable[panel.datasource],
+      datasourceName: panel.datasource
+    }));
 
     let formattedUrl = this.templateSrv.replace(this.panel.backendUrl);
     if(!formattedUrl.includes('http://') && !formattedUrl.includes('https://')) {
@@ -280,10 +301,8 @@ class Ctrl extends PanelCtrl {
       const resp = await this.backendSrv.post(`${formattedUrl}/tasks`, {
         from: this.rangeOverride.from.valueOf(),
         to: this.rangeOverride.to.valueOf(),
-        panelUrl,
+        data,
         target,
-        datasourceRequest,
-        datasourceName,
         user: this._user
       });
 

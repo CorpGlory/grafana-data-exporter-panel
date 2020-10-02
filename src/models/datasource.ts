@@ -2,6 +2,7 @@ export type DatasourceRequest = {
   method: string,
   data: Object,
   params: Object,
-  type: string,
-  url: string
+  type?: string,
+  url: string,
+  datasourceId?: number
 }

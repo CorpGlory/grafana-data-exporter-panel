@@ -75,8 +75,6 @@ class Ctrl extends PanelCtrl {
       const isSqlDatasource = requestConfig.data !== undefined &&
         requestConfig.data.queries !== undefined;
 
-      console.log('ds-request-response!!!!!!!')
-
       if(isSqlDatasource) {
         for(let query of requestConfig.data.queries) {
           this._datasourceRequests[query.datasourceId] = {
@@ -265,19 +263,10 @@ class Ctrl extends PanelCtrl {
 
     let datasourceTable = {};
     try {
-      let datasources = await this.backendSrv.get(`/api/datasources`) ;
-
-      console.log('DATASROUCES', datasources);
-      console.log('REQUESTS', this._datasourceRequests);
-
-      const exportTable = _.keyBy(exportPanels, 'datasource');
-      datasourceTable = (datasources as {name: string}[])
-        .reduce((result, item) => {
-        if(exportTable[item.name]) {
-          result[item.name] = this._formatDatasourceRequest(item);
-        }
-        return result;
-      });
+      await Promise.all(exportPanels.map(async panel => {
+        const datasource = await this._getDatasourceByName(panel.datasource);
+        datasourceTable[panel.datasource] = this._formatDatasourceRequest(datasource);
+      }));
     } catch (e) {
       appEvents.emit(
         'alert-error',
@@ -296,7 +285,7 @@ class Ctrl extends PanelCtrl {
       datasourceRequest: datasourceTable[panel.datasource],
       datasourceName: panel.datasource,
       target
-    })));
+    }))).flat();
 
     console.log(data);
 

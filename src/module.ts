@@ -279,6 +279,8 @@ class Ctrl extends PanelCtrl {
     // TODO: support org_id
     const data = exportPanels.map(panel => panel.targets.map(target => ({
       panelUrl: window.location.origin + window.location.pathname + `?panelId=${panel.id}&fullscreen`,
+      panelTitle: panel.title,
+      panelId: panel.id,
       datasourceRequest: datasourceTable[panel.datasource],
       datasourceName: panel.datasource,
       target
